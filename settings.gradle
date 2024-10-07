@@ -1,0 +1,16 @@
+pluginManagement {
+	plugins {
+		id 'com.javiersc.semver' version '0.7.1'
+	}
+}
+
+plugins {
+	id 'com.javiersc.semver'
+}
+
+file('.').eachDir { sub ->
+	File buildFile = new File(sub, "build.gradle")
+	if (buildFile.exists()) {
+		include sub.name
+	}
+}

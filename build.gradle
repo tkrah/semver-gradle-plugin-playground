@@ -1,0 +1,42 @@
+plugins {
+	id 'base'
+}
+
+def evaluateProjectVersion() {
+	if (System.env.BUILD_NUMBER != null) {
+		version = version.toString().replaceAll("\\+.*", "+build${String.format("%05d", Integer.parseInt(System.env.BUILD_NUMBER as String))}")
+	}
+	logger.lifecycle("${project.name} Version ${project.version}")
+	return version
+}
+
+semver {
+	mapVersion { "1.0.0" }
+	// mapVersion { evaluateProjectVersion() }
+}
+
+tasks.register('initNightly') {
+	doFirst {
+		if (System.env.BUILD_NUMBER == null) {
+			throw new GradleException("BUILD_NUMBER missing")
+		}
+	}
+	finalizedBy deploy
+}
+
+tasks.register('test') {
+	doLast {
+		println "TEST ${project.version}!"
+	}
+}
+
+tasks.register('deploy') {
+	doLast {
+		println "DEPLOY ${project.version}!"
+	}
+}
+
+tasks.register('nightly') {
+	dependsOn initNightly
+	finalizedBy test
+}

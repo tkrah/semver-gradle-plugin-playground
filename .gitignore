@@ -1,0 +1,24 @@
+# Node
+node_modules
+.npm
+*.log
+npm-debug.log*
+package-lock.json
+
+# IDE (including symlinks)
+.vscode
+.idea
+.classpath
+.settings
+.metadata
+.gradle
+.project
+*.iml
+*.launch
+atlassian-ide-plugin.xml
+
+# Other
+.DS_Store
+
+# Build artifact
+build
