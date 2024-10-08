@@ -1,3 +1,7 @@
+import com.javiersc.gradle.version.GradleVersion
+import com.javiersc.semver.project.gradle.plugin.SemverExtension
+import com.javiersc.semver.project.gradle.plugin.SemverExtension.VersionMapper
+
 pluginManagement {
 	plugins {
 		id 'com.javiersc.semver' version '0.7.1'
@@ -12,5 +16,26 @@ file('.').eachDir { sub ->
 	File buildFile = new File(sub, "build.gradle")
 	if (buildFile.exists()) {
 		include sub.name
+	}
+}
+
+class Map {
+	static per = new VersionMapper() {
+		@Override
+		String map(GradleVersion gradleVersion) {
+			String v = gradleVersion.toString()
+			if (System.env.BUILD_NUMBER != null) {
+				v = v.toString().replaceAll("\\+.*", "+build${String.format("%05d", Integer.parseInt(System.env.BUILD_NUMBER as String))}")
+			}
+			v
+		}
+	}
+}
+
+gradle.beforeProject { project ->
+	project.pluginManager.withPlugin('com.javiersc.semver.project') {
+		project.extensions.configure(SemverExtension) { semver ->
+			semver.mapVersion Map.per
+		}
 	}
 }
